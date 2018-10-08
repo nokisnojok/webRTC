@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    let a = new RTCPeerConnection();
+
+    // = 
+
+
+
+    let b = new RTCPeerConnection();
+    b.ondatachannel = (e) => {
+      window.e = e
+      console.log("on ondatachannel");
+    };
+    function handleAddCandidateError(error) {
+      console.log("err", error);
+    }
+
+    a.onicecandidate = e =>
+      !e.candidate ||
+      b.addIceCandidate(e.candidate).catch(handleAddCandidateError);
+    // let sendChannel = a.createDataChannel("sendChannel");
+    let send = a.createDataChannel('text');
+    a.createOffer()
+      .then(offer => a.setLocalDescription(offer))
+      .then(() => b.setRemoteDescription(a.localDescription))
+      .then(() => b.createAnswer())
+      .then(answer => b.setLocalDescription(answer))
+      .then(() => a.setRemoteDescription(b.localDescription))
+      .catch(handleAddCandidateError);
+
+  </script>
+</body>
+
+</html>
